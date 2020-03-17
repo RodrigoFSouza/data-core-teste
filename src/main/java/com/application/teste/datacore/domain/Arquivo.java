@@ -1,12 +1,9 @@
 package com.application.teste.datacore.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity
 @Table(name = "arquivo")
@@ -14,16 +11,16 @@ public class Arquivo implements Serializable {
     private static final Long serialVersionUID  = 1L;
 
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String nome;
     private LocalDateTime dataCriacao;
 
     public Arquivo() {
-        this.id = UUID.randomUUID();
+
     }
 
     public Arquivo(String nomeDoArquivo, LocalDateTime dataCriacao) {
-        this.id = UUID.randomUUID();
         this.nome = nomeDoArquivo;
         this.dataCriacao = dataCriacao;
     }
@@ -55,5 +52,14 @@ public class Arquivo implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Arquivo{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", dataCriacao=" + dataCriacao +
+                '}';
     }
 }

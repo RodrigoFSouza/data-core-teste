@@ -2,14 +2,12 @@ package com.application.teste.datacore.data;
 
 import com.application.teste.datacore.config.ApplicationProperties;
 import com.application.teste.datacore.domain.Arquivo;
-import com.application.teste.datacore.service.PersisteArquivoService;
+import com.application.teste.datacore.service.ArquivoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,11 +20,11 @@ import java.util.List;
 public class GeradorDeArquivos {
     private List<Arquivo> arquivosList;
     private ApplicationProperties applicationProperties;
-    private PersisteArquivoService persisteArquivoService;
+    private ArquivoService arquivoService;
 
     @Autowired
-    public GeradorDeArquivos(ApplicationProperties applicationProperties, PersisteArquivoService persisteArquivoService) {
-        this.persisteArquivoService = persisteArquivoService;
+    public GeradorDeArquivos(ApplicationProperties applicationProperties, ArquivoService arquivoService) {
+        this.arquivoService = arquivoService;
         this.arquivosList = new ArrayList<Arquivo>();
         this.applicationProperties = applicationProperties;
     }
@@ -36,7 +34,45 @@ public class GeradorDeArquivos {
         for (int i = 1; i <= 100; i ++) {
             escritor(i + ".txt");
         }
-        persisteArquivoService.persisteArquivos(arquivosList);
+        arquivoService.persisteArquivos(arquivosList);
+
+        listaParesNoArquivo();
+        mostrarLog();
+    }
+
+    private void mostrarLog() {
+        try {
+            FileInputStream arquivo = new FileInputStream("log.txt");
+            InputStreamReader input = new InputStreamReader(arquivo);
+            BufferedReader br = new BufferedReader(input);
+
+            String linha;
+            do {
+                linha = br.readLine();
+                if (linha != null) {
+                    System.out.println(linha);
+                }
+            } while (linha != null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void listaParesNoArquivo() {
+        try {
+            FileOutputStream arquivo = new FileOutputStream("log.txt");
+            PrintWriter pr = new PrintWriter(arquivo);
+
+            var listaPares = arquivoService.listarPares();
+            listaPares.forEach(pr::println);
+
+            pr.close();
+            arquivo.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void escritor(String nomeDoArquivo) {
