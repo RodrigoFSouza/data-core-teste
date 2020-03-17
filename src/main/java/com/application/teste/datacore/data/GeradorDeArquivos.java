@@ -18,6 +18,8 @@ import java.util.List;
 
 @Component
 public class GeradorDeArquivos {
+    public static final int TOTAL_ARQUIVOS = 100;
+
     private List<Arquivo> arquivosList;
     private ApplicationProperties applicationProperties;
     private ArquivoService arquivoService;
@@ -31,9 +33,27 @@ public class GeradorDeArquivos {
 
     @PostConstruct
     public void gerandoArquivos() {
-        for (int i = 1; i <= 100; i ++) {
-            escritor(i + ".txt");
-        }
+        Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 1; i <= TOTAL_ARQUIVOS/2; i ++) {
+                    escritor(i + ".txt");
+                }
+            }
+        });
+
+        Thread t2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = TOTAL_ARQUIVOS/2 + 1; i <= TOTAL_ARQUIVOS; i ++) {
+                    escritor(i + ".txt");
+                }
+            }
+        });
+
+        t1.start();
+        t2.start();
+
         arquivoService.persisteArquivos(arquivosList);
 
         listaParesNoArquivo();
