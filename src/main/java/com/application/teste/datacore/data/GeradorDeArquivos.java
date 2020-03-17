@@ -1,6 +1,8 @@
 package com.application.teste.datacore.data;
 
 import com.application.teste.datacore.config.ApplicationProperties;
+import com.application.teste.datacore.domain.Arquivo;
+import com.application.teste.datacore.service.PersisteArquivoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,14 +15,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class GeradorDeArquivos {
-
+    private List<Arquivo> arquivosList;
     private ApplicationProperties applicationProperties;
+    private PersisteArquivoService persisteArquivoService;
 
     @Autowired
-    public GeradorDeArquivos(ApplicationProperties applicationProperties) {
+    public GeradorDeArquivos(ApplicationProperties applicationProperties, PersisteArquivoService persisteArquivoService) {
+        this.persisteArquivoService = persisteArquivoService;
+        this.arquivosList = new ArrayList<Arquivo>();
         this.applicationProperties = applicationProperties;
     }
 
@@ -29,6 +36,7 @@ public class GeradorDeArquivos {
         for (int i = 1; i <= 100; i ++) {
             escritor(i + ".txt");
         }
+        persisteArquivoService.persisteArquivos(arquivosList);
     }
 
     public void escritor(String nomeDoArquivo) {
@@ -46,6 +54,7 @@ public class GeradorDeArquivos {
             PrintWriter pr = new PrintWriter(arquivo);
 
             LocalDateTime dataEHoraAtual = LocalDateTime.now();
+            arquivosList.add(new Arquivo(nomeDoArquivo, dataEHoraAtual));
 
             DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
             String dataEHoraFormatada = dataEHoraAtual.format(dateTimeFormatter);

@@ -1,2 +1,12 @@
 data:
     path: ${HOME}/arquivos
+
+spring:
+    datasource:
+        url: jdbc:h2:mem:dataCoreDB
+        driver: org.h2.Driver
+        username: sa
+        password: password
+
+    jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
